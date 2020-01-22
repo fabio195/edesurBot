@@ -10,10 +10,12 @@ import demjson
 TOKEN = ''
 bot = telebot.TeleBot(TOKEN)
 jsonCortes = requests.get("https://www.enre.gov.ar/paginacorte/js/data_EDS.js?").text
-jsonCortes = jsonCortes.replace('var data = ', '')
-jsonCortes = demjson.decode(jsonCortes)
+jsonCortes = jsonCortes.replace('var data = ', '') # Eliminar datos innecesarios
+jsonCortes = demjson.decode(jsonCortes) # Convertir js class en json
 
-class Corte:
+# Code
+
+class Corte: # Crear clase para guardar los datos ingresados
   partido = ''
   localidad = ''
 
