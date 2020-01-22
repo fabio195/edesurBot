@@ -9,16 +9,15 @@ import demjson
 
 TOKEN = ''
 bot = telebot.TeleBot(TOKEN)
-data = requests.get("https://www.enre.gov.ar/paginacorte/js/data_EDS.js?")
-response = data.text
-info = response.replace('var data = ', '')
-jsonCortes = demjson.decode(info)
-
-# Code
+jsonCortes = requests.get("https://www.enre.gov.ar/paginacorte/js/data_EDS.js?").text
+jsonCortes = jsonCortes.replace('var data = ', '')
+jsonCortes = demjson.decode(jsonCortes)
 
 class Corte:
   partido = ''
   localidad = ''
+
+print("Bot iniciado")
 
 @bot.message_handler(commands=['start'])
 def start_handler(message):
@@ -37,15 +36,16 @@ def set_localidad(message):
   check_corte(message)
 
 def check_corte(message):
-  print(Corte.partido)
-  print(Corte.localidad)
-  for corte in jsonCortes['cortesServicioBaja']:
-    if corte['partido'] == Corte.partido:
-      if corte['localidad'] == Corte.localidad:
-        bot.send_message(message.chat.id, "Hay corte de energía en tu zona")
 
-for corte in jsonCortes['cortesServicioBaja']:
-  if corte['partido'] == 'CAPITAL':
-    print(corte)
+  for corte in jsonCortes['cortesServicioBaja']:
+    if corte['partido'] == Corte.partido and corte['localidad'] == Corte.localidad:
+      existeLocalidadPartido = True
+    else:
+      existeLocalidadPartido = False
+
+  if existeLocalidadPartido:
+    bot.send_message(message.chat.id, "Hay cortes en tu zona")
+  else:
+    bot.send_message(message.chat.id, "No hay cortes en tu zona")
 
 bot.polling()
